@@ -1,3 +1,3 @@
 # linear-regression
 
-### How to run the program:
+### How to run the program: TBD
