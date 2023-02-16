@@ -2,7 +2,7 @@
 
 #### PART 1 [75 points]
 
-- [ ] Choose a [dataset](https://archive.ics.uci.edu/ml/index.php) suitable for regression
+- [x] Choose a [dataset](https://archive.ics.uci.edu/ml/index.php) suitable for regression
 - [ ] Host the dataset online [UTD Web account, AWS, etc]
 - [ ] Pre-process the dataset
   - [ ] remove null or NA values
