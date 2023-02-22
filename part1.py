@@ -105,9 +105,23 @@ if __name__ == '__main__':
     print('R2 score is {}'.format(r2_score(Y_test, prediction_df['pred'])))
     print('Explained variance score is {}\n'.format(explained_variance_score(Y_test, prediction_df['pred'])))
 
-    plt.figure()
-    plt.xlabel('Iterations')
-    plt.ylabel('MSE')
-    plt.title('MSE vs. Iterations')
-    plt.scatter(x=list(range(len(costs))), y=costs)
+    figure, axis = plt.subplots(2, 2, figsize=(12, 12))
+
+    X1 = list(range(len(costs)))
+    Y1 = costs
+
+    X2 = X_test['diam']
+    X3 = X_test['shl_weight']
+    X4 = X_test['w_weight']
+    Y2 = Y_test
+
+    axis[0, 0].plot(X1, Y1)
+    axis[0, 0].set_title('MSE vs. Iterations')
+    axis[0, 1].scatter(X2, Y2)
+    axis[0, 1].set_title('Normalized Diameter vs. Predicted # of Rings')
+    axis[1, 0].scatter(X3, Y2)
+    axis[1, 0].set_title('Normalized Shell Weight vs. Predicted # of Rings')
+    axis[1, 1].scatter(X4, Y2)
+    axis[1, 1].set_title('Normalized Whole Weight vs. Predicted # of Rings')
+
     plt.show()
