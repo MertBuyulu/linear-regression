@@ -5,10 +5,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 
 class LinearRegression:
-    def __init__(self, learning_rate=0.003, iterations=10000, tolerance=0.000001):
+    def __init__(self, learning_rate=0.003, iterations=10000):
         self.learning_rate = learning_rate
         self.iterations = iterations
-        self.tolerance = tolerance
         self.weights = None
         self.bias = 0
 
@@ -55,7 +54,7 @@ class LinearRegression:
 
 
 if __name__ == '__main__':
-    model = LinearRegression(learning_rate=0.003, iterations=10000, tolerance=0.000001)
+    model = LinearRegression(learning_rate=0.003, iterations=10000)
     X_train, X_test, Y_train, Y_test = model.preprocess_data()
     costs = model.fit(X_train, Y_train)
     prediction_df = model.predict(X_test, Y_test)
