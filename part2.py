@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.linear_model import SGDRegressor
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import explained_variance_score
@@ -34,7 +35,7 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=5)
 
     # Model instatiation with appropriate hyperparameters
-    model = SGDRegressor(loss="squared_error", alpha=0.0000001, eta0=0.0001, max_iter = 50000, tol = 0.000001)
+    model = SGDRegressor(loss="squared_error", alpha=0.000001, eta0=0.0001, max_iter = 50000, tol = 0.000001)
 
     # Fit the model to the training data using gradient descent
     model.fit(X_train, Y_train)
@@ -58,3 +59,20 @@ if __name__ == '__main__':
     r2 = r2_score(Y_test, y_test_predict)
     display_metrics(mse ,r2, evs, "testing")
 
+    figure, axis = plt.subplots(2, 2, figsize=(12, 12))
+    X1 = X_test['height']
+    X2 = X_test['diam']
+    X3 = X_test['shl_weight']
+    X4 = X_test['w_weight']
+    Y2 = Y_test
+
+    axis[0, 0].scatter(X1, Y2)
+    axis[0, 0].set_title('Normalized Height vs. Predicted # of Rings')
+    axis[0, 1].scatter(X2, Y2)
+    axis[0, 1].set_title('Normalized Diameter vs. Predicted # of Rings')
+    axis[1, 0].scatter(X3, Y2)
+    axis[1, 0].set_title('Normalized Shell Weight vs. Predicted # of Rings')
+    axis[1, 1].scatter(X4, Y2)
+    axis[1, 1].set_title('Normalized Whole Weight vs. Predicted # of Rings')
+
+    plt.show()
