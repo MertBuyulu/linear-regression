@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import sys
 import matplotlib.pyplot as plt
 from sklearn.linear_model import SGDRegressor
 from sklearn.preprocessing import StandardScaler
@@ -7,14 +8,26 @@ from sklearn.metrics import explained_variance_score
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 
+# prints metrics such as MSE, R2, EVS for the model
+def metrics(model, Y_train, Y_train_pred, Y_test, Y_test_pred):
+    mse = mean_squared_error(Y_train, Y_train_pred)
 
+    print("Parameters: learning_rate = {} iterations = {}".format(model.eta0, model.max_iter))
+    print("Estimated Coefficients: {}\n".format(model.coef_))
 
-def display_metrics(mse, r2, evs, set_type):
-    print("The model performance for {} set".format(set_type))
+    print("The model performance for training set")
     print("--------------------------------------")
     print('MSE is {}'.format(mse))
-    print('R2 score is {}'.format(r2))
-    print("Explained variance score: {}\n".format(evs))
+    print('R2 score is {}'.format(r2_score(Y_train, Y_train_pred)))
+    print('Explained variance score is {}\n'.format(explained_variance_score(Y_train, Y_train_pred)))
+
+    print("The model performance for test set")
+    print("--------------------------------------")
+    print('MSE is {}'.format(mean_squared_error(Y_test, Y_test_pred)))
+    print('R2 score is {}'.format(r2_score(Y_test, Y_test_pred)))
+    print('Explained variance score is {}\n'.format(explained_variance_score(Y_test, Y_test_pred)))
+
+    return mse
 
 if __name__ == '__main__':
     # read the data into a csv
@@ -40,25 +53,46 @@ if __name__ == '__main__':
     # Fit the model to the training data using gradient descent
     model.fit(X_train, Y_train)
 
-    print("Paramaters: learning_rate = {}, iterations = {}".format(model.eta0, model.max_iter))
+    # route stdout to logfile for parameter tuning log
+    std_out = sys.stdout
+    sys.stdout = open('log.txt', 'w')
 
-    # Optimized paramaters (weight coefficients)
-    weights = model.coef_
-    print("Estimated Coefficients: {}\n".format(weights))
+    # save best parameters
+    best_mse = float('inf')
+    best_train_predictions = None
+    best_test_predictions = None
+    best_eta0 = 0
+    best_max_iter = 0
 
-    # Model evaluation for training set
-    y_train_predict = model.predict(X_train)
-    mse = mean_squared_error(Y_train, y_train_predict)
-    r2 = r2_score(Y_train, y_train_predict)
-    evs = explained_variance_score(Y_train, y_train_predict)
-    display_metrics(mse ,r2, evs, "training")
+    # parameter grid, 3 learning rates and 2 iteration counts
+    for eta in [0.003, 0.005, 0.008]:
+        for iterations in [10000, 15000]:
+            model.eta0 = eta
+            model.max_iter = iterations
+            model.fit(X_train, Y_train)
+            y_train_predict = model.predict(X_train)
+            y_test_predict = model.predict(X_test)
+            mse = metrics(model, Y_train, y_train_predict, Y_test, y_test_predict)
 
-    # Model evaluation for testing set
-    y_test_predict = model.predict(X_test)
-    mse = mean_squared_error(Y_test, y_test_predict)
-    r2 = r2_score(Y_test, y_test_predict)
-    display_metrics(mse ,r2, evs, "testing")
+            # check if best error
+            if mse < best_mse:
+                best_eta0 = eta
+                best_max_iter = iterations
+                best_mse = mse
+                best_train_predictions = y_train_predict
+                best_test_predictions = y_test_predict
 
+    # close logfile
+    sys.stdout = std_out
+
+    # set best parameters
+    model.eta0 = best_eta0
+    model.max_iter = best_max_iter
+
+    # print metrics for best parameters
+    metrics(model, Y_train, best_train_predictions, Y_test, best_test_predictions)
+
+    # plot graphs
     figure, axis = plt.subplots(2, 2, figsize=(12, 12))
     X1 = X_test['height']
     X2 = X_test['diam']

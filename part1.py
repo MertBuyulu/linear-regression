@@ -98,10 +98,15 @@ if __name__ == '__main__':
     # route stdout to logfile for parameter tuning log
     std_out = sys.stdout
     sys.stdout = open('log.txt', 'w')
+
+    # save the best parameters
     best_mse = float('inf')
     best_costs = []
     best_train_predictions = None
     best_prediction_df = None
+    best_iterations = 0
+    best_learning_rate = 0
+
     # parameter grid, 3 learning rates and 2 iteration counts
     for learning_rate in [0.003, 0.005, 0.008]:
         for iterations in [10000, 15000]:
@@ -113,6 +118,8 @@ if __name__ == '__main__':
 
             # check if best error
             if mse < best_mse:
+                best_iterations = iterations
+                best_learning_rate = learning_rate
                 best_mse = mse
                 best_train_predictions = train_predictions
                 best_prediction_df = prediction_df
@@ -120,6 +127,10 @@ if __name__ == '__main__':
 
     # close logfile
     sys.stdout = std_out
+
+    # set best parameters
+    model.learning_rate = best_learning_rate
+    model.iterations = best_iterations
 
     # print metrics for best parameters
     metrics(model, Y_train, best_train_predictions, Y_test, best_prediction_df['pred'])

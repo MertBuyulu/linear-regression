@@ -23,6 +23,8 @@ The following imports are required to run `part2.py`:
 ```python
 import numpy as np
 import pandas as pd
+import sys
+import matplotlib.pyplot as plt
 from sklearn.linear_model import SGDRegressor
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import explained_variance_score
