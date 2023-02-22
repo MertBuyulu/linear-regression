@@ -55,13 +55,13 @@ class LinearRegression:
         
         return Y
     
-def metrics(model, Y, Y_pred):
+def metrics(model, Y, Y_pred, type):
     mse = mean_squared_error(Y_train, train_predictions)
 
     print("Parameters: learning_rate = {} iterations = {}".format(model.learning_rate, model.iterations))
     print("Estimated Coefficients: {}\n".format(model.weights))
 
-    print("The model performance for training set")
+    print("The model performance for {} set".format(type))
     print("--------------------------------------")
     print('MSE is {}'.format(mse))
     print('R2 score is {}'.format(r2_score(Y_train, train_predictions)))
@@ -75,7 +75,6 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test = model.preprocess_data()
 
     std_out = sys.stdout
-
     sys.stdout = open('log.txt', 'w')
     best_mse = float('inf')
     best_learning_rate = 0
@@ -85,7 +84,9 @@ if __name__ == '__main__':
             model.learning_rate = learning_rate
             model.iterations = iterations
             costs, train_predictions = model.fit(X_train, Y_train)
-            mse = metrics(model, Y_test, train_predictions)
+            mse = metrics(model, Y_train, train_predictions, 'training')
+            prediction_df = model.predict(X_test, Y_test)
+            metrics(model, Y_test, prediction_df['pred'], 'test')
             if mse < best_mse:
                 best_mse = mse
                 best_learning_rate = learning_rate
@@ -97,13 +98,8 @@ if __name__ == '__main__':
     prediction_df = model.predict(X_test, Y_test)
     sys.stdout = std_out
 
-    metrics(model, Y_test, prediction_df['pred'])
-
-    print("The model performance for testing set")
-    print("--------------------------------------")
-    print('MSE is {}'.format(mean_squared_error(Y_test, prediction_df['pred'])))
-    print('R2 score is {}'.format(r2_score(Y_test, prediction_df['pred'])))
-    print('Explained variance score is {}\n'.format(explained_variance_score(Y_test, prediction_df['pred'])))
+    metrics(model, Y_train, train_predictions, 'training')
+    metrics(model, Y_test, prediction_df['pred'], 'test')
 
     figure, axis = plt.subplots(2, 2, figsize=(12, 12))
 

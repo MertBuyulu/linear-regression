@@ -74,4 +74,4 @@ R2 score is 0.47417061946748507
 Explained variance score is 0.4741842279164812
 ```
 
-All parameter tuning/selection output is printed to the log file `log.txt`.
+All parameter tuning/selection output is printed to the log file `log.txt`. The output is similar to the terminal output, and training and test set evaluation metrics are printed for each combination of parameters tested.
